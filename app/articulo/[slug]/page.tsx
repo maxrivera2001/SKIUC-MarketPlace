@@ -5,6 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import PhoneReveal from '@/components/PhoneReveal';
 import StickyContactMobile from '@/components/StickyContactMobile';
 import StatusActions from '@/components/StatusActions';
+import ImageGallery from '@/components/ImageGallery';
 import { getCategoryById, CONDITIONS } from '@/lib/categories';
 import type { Metadata } from 'next';
 import type { Listing, Profile } from '@/lib/supabase';
@@ -75,47 +76,11 @@ export default async function ArticuloPage({ params }: Props) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Image Gallery */}
-        <div className="space-y-2">
-          {listing.images && listing.images.length > 0 ? (
-            <>
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100">
-                <Image
-                  src={listing.images[0]}
-                  alt={listing.title}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                {listing.status !== 'active' && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="bg-white text-gray-900 font-bold px-6 py-2 rounded-full text-lg">
-                      {listing.status === 'sold' ? 'VENDIDO' : 'PAUSADO'}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {listing.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                  {listing.images.slice(1).map((img, i) => (
-                    <div key={i} className="relative aspect-square w-20 shrink-0 rounded-xl overflow-hidden bg-gray-100">
-                      <Image
-                        src={img}
-                        alt={`${listing.title} foto ${i + 2}`}
-                        fill
-                        className="object-cover"
-                        sizes="80px"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="aspect-[4/3] rounded-2xl bg-gray-100 flex items-center justify-center text-gray-300">
-              <svg className="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+        <div>
+          <ImageGallery images={listing.images ?? []} title={listing.title} />
+          {listing.status !== 'active' && (
+            <div className="mt-2 text-center py-2 rounded-xl font-bold text-sm bg-red-100 text-red-700">
+              {listing.status === 'sold' ? '🏷️ VENDIDO' : '⏸️ PAUSADO'}
             </div>
           )}
         </div>
