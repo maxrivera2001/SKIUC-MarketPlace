@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import PhoneReveal from '@/components/PhoneReveal';
 import StickyContactMobile from '@/components/StickyContactMobile';
+import StatusActions from '@/components/StatusActions';
 import { getCategoryById, CONDITIONS } from '@/lib/categories';
 import type { Metadata } from 'next';
 import type { Listing, Profile } from '@/lib/supabase';
@@ -208,10 +209,10 @@ export default async function ArticuloPage({ params }: Props) {
 
           {/* Owner actions */}
           {isOwner && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-yellow-800 mb-3">Tu publicación</p>
-              <StatusActionButtons listingId={listing.id} currentStatus={listing.status} />
-            </div>
+            <StatusActions
+              listingId={listing.id}
+              currentStatus={listing.status as 'active' | 'sold' | 'paused'}
+            />
           )}
         </div>
       </div>
@@ -259,42 +260,3 @@ export default async function ArticuloPage({ params }: Props) {
   );
 }
 
-function StatusActionButtons({
-  listingId,
-  currentStatus,
-}: {
-  listingId: string;
-  currentStatus: string;
-}) {
-  return (
-    <div className="flex gap-2 flex-wrap text-sm">
-      {currentStatus !== 'active' && (
-        <form action={`/api/listings/${listingId}`} method="POST">
-          <input type="hidden" name="_method" value="PATCH" />
-          <input type="hidden" name="status" value="active" />
-          <button type="submit" className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-            Activar
-          </button>
-        </form>
-      )}
-      {currentStatus !== 'paused' && (
-        <form action={`/api/listings/${listingId}`} method="POST">
-          <input type="hidden" name="_method" value="PATCH" />
-          <input type="hidden" name="status" value="paused" />
-          <button type="submit" className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors">
-            Pausar
-          </button>
-        </form>
-      )}
-      {currentStatus !== 'sold' && (
-        <form action={`/api/listings/${listingId}`} method="POST">
-          <input type="hidden" name="_method" value="PATCH" />
-          <input type="hidden" name="status" value="sold" />
-          <button type="submit" className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
-            Marcar vendido
-          </button>
-        </form>
-      )}
-    </div>
-  );
-}
