@@ -22,14 +22,14 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }: Props) 
       const tooBig: string[] = [];
       const valid = Array.from(files).filter((f) => {
         if (!f.type.startsWith('image/')) return false;
-        if (f.size > 5 * 1024 * 1024) {
+        if (f.size > 3 * 1024 * 1024) {
           tooBig.push(f.name);
           return false;
         }
         return true;
       });
       if (tooBig.length > 0) {
-        setSizeError(`${tooBig.length} foto${tooBig.length > 1 ? 's superan' : ' supera'} los 5 MB y no se agregó. Comprime la imagen antes de subirla.`);
+        setSizeError(`${tooBig.length} foto${tooBig.length > 1 ? 's superan' : ' supera'} los 3 MB y no se agregó. Comprime la imagen antes de subirla.`);
       }
       const combined = [...images, ...valid].slice(0, maxImages);
       onChange(combined);
@@ -99,7 +99,7 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }: Props) 
             : 'Arrastra fotos aquí o haz clic para seleccionar'}
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          {images.length}/{maxImages} fotos · JPG, PNG, WEBP · máx 5 MB c/u
+          {images.length}/{maxImages} fotos · JPG, PNG, WEBP · máx 3 MB c/u
         </p>
       </div>
 

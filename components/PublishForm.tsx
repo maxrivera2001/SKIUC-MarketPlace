@@ -403,7 +403,7 @@ export default function PublishForm() {
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">Fotos del artículo</h2>
               <p className="text-sm text-gray-500">
-                Agrega entre 1 y 3 fotos (máx 5 MB c/u). La primera será la imagen principal.
+                Agrega entre 1 y 3 fotos (máx 3 MB c/u). La primera será la imagen principal.
               </p>
             </div>
             <ImageUpload images={images} onChange={setImages} maxImages={3} />
