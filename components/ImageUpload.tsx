@@ -13,10 +13,24 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }: Props) 
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const addFiles = useCallback(
     (files: FileList | null) => {
       if (!files) return;
-      const valid = Array.from(files).filter((f) => f.type.startsWith('image/'));
+      setSizeError(null);
+      const tooBig: string[] = [];
+      const valid = Array.from(files).filter((f) => {
+        if (!f.type.startsWith('image/')) return false;
+        if (f.size > 3 * 1024 * 1024) {
+          tooBig.push(f.name);
+          return false;
+        }
+        return true;
+      });
+      if (tooBig.length > 0) {
+        setSizeError(`${tooBig.length} foto${tooBig.length > 1 ? 's superan' : ' supera'} los 3 MB y no se agregó. Comprime la imagen antes de subirla.`);
+      }
       const combined = [...images, ...valid].slice(0, maxImages);
       onChange(combined);
     },
@@ -85,9 +99,15 @@ export default function ImageUpload({ images, onChange, maxImages = 5 }: Props) 
             : 'Arrastra fotos aquí o haz clic para seleccionar'}
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          {images.length}/{maxImages} imágenes · JPG, PNG, WEBP
+          {images.length}/{maxImages} fotos · JPG, PNG, WEBP · máx 3 MB c/u
         </p>
       </div>
+
+      {sizeError && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          ⚠️ {sizeError}
+        </p>
+      )}
 
       {/* Preview grid */}
       {images.length > 0 && (

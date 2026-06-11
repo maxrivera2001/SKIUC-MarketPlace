@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 const BUCKET = 'listing-images';
-const MAX_SIZE_MB = 10;
+const MAX_SIZE_MB = 3;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 function getSupabaseUser() {
