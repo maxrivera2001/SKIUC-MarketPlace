@@ -38,6 +38,7 @@ export default async function AdminPage() {
     { count: activeListings },
     { count: totalUsers },
     { count: blockedUsers },
+    { data: allImages },
   ] = await Promise.all([
     adminClient
       .from('listings')
@@ -49,7 +50,28 @@ export default async function AdminPage() {
     adminClient.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     adminClient.from('profiles').select('*', { count: 'exact', head: true }),
     adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('blocked', true),
+    // Fetch images arrays to count total photos
+    adminClient.from('listings').select('images'),
   ]);
+
+  // Calculate storage stats from image counts
+  // Each image is assumed avg 1.5 MB (conservative estimate between compressed and raw)
+  const AVG_MB_PER_IMAGE = 1.5;
+  const STORAGE_LIMIT_MB = 1024; // 1 GB free tier
+
+  const totalImages = (allImages ?? []).reduce(
+    (sum: number, row: { images: string[] | null }) => sum + (row.images?.length ?? 0),
+    0
+  );
+  const usedStorageMB = totalImages * AVG_MB_PER_IMAGE;
+  const listingsWithImages = (allImages ?? []).filter(
+    (r: { images: string[] | null }) => (r.images?.length ?? 0) > 0
+  ).length;
+  const avgMBPerListing = listingsWithImages > 0 ? usedStorageMB / listingsWithImages : 0;
+  const remainingMB = STORAGE_LIMIT_MB - usedStorageMB;
+  const capacityAtCurrentRate = avgMBPerListing > 0
+    ? Math.floor(remainingMB / avgMBPerListing)
+    : null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -66,6 +88,13 @@ export default async function AdminPage() {
           activeListings: activeListings ?? 0,
           totalUsers: totalUsers ?? 0,
           blockedUsers: blockedUsers ?? 0,
+        }}
+        storage={{
+          usedMB: usedStorageMB,
+          limitMB: STORAGE_LIMIT_MB,
+          totalImages,
+          avgMBPerListing,
+          capacityRemaining: capacityAtCurrentRate,
         }}
       />
     </div>

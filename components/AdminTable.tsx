@@ -17,13 +17,20 @@ type Props = {
     totalUsers: number;
     blockedUsers: number;
   };
+  storage: {
+    usedMB: number;
+    limitMB: number;
+    totalImages: number;
+    avgMBPerListing: number;
+    capacityRemaining: number | null;
+  };
 };
 
 function formatCLP(price: number): string {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(price);
 }
 
-export default function AdminTable({ listings: initialListings, users: initialUsers, stats }: Props) {
+export default function AdminTable({ listings: initialListings, users: initialUsers, stats, storage }: Props) {
   const [tab, setTab] = useState<Tab>('listings');
   const [listings, setListings] = useState(initialListings);
   const [users, setUsers] = useState(initialUsers);
@@ -92,6 +99,9 @@ export default function AdminTable({ listings: initialListings, users: initialUs
     );
   };
 
+  const usedPct = Math.min((storage.usedMB / storage.limitMB) * 100, 100);
+  const barColor = usedPct >= 85 ? 'bg-red-500' : usedPct >= 60 ? 'bg-yellow-400' : 'bg-green-500';
+
   return (
     <div className="space-y-6">
       {/* Stats */}
@@ -107,6 +117,56 @@ export default function AdminTable({ listings: initialListings, users: initialUs
             <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Storage card */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-gray-900 text-sm">Storage (Supabase free tier · 1 GB)</h3>
+          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+            usedPct >= 85 ? 'bg-red-100 text-red-700' :
+            usedPct >= 60 ? 'bg-yellow-100 text-yellow-700' :
+            'bg-green-100 text-green-700'
+          }`}>
+            {usedPct.toFixed(1)}% usado
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
+          <div
+            className={`h-3 rounded-full transition-all ${barColor}`}
+            style={{ width: `${usedPct}%` }}
+          />
+        </div>
+
+        {/* Grid de métricas */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          <div>
+            <p className="text-lg font-black text-gray-800">{storage.usedMB.toFixed(0)} MB</p>
+            <p className="text-xs text-gray-400">Usado (est.)</p>
+          </div>
+          <div>
+            <p className="text-lg font-black text-gray-800">{(storage.limitMB - storage.usedMB).toFixed(0)} MB</p>
+            <p className="text-xs text-gray-400">Disponible</p>
+          </div>
+          <div>
+            <p className="text-lg font-black text-gray-800">
+              {storage.avgMBPerListing > 0 ? `${storage.avgMBPerListing.toFixed(1)} MB` : '—'}
+            </p>
+            <p className="text-xs text-gray-400">Prom. por publicación</p>
+          </div>
+          <div>
+            <p className={`text-lg font-black ${storage.capacityRemaining !== null && storage.capacityRemaining < 50 ? 'text-red-600' : 'text-gray-800'}`}>
+              {storage.capacityRemaining !== null ? `~${storage.capacityRemaining}` : '∞'}
+            </p>
+            <p className="text-xs text-gray-400">Publicaciones restantes</p>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-400 mt-3">
+          * Estimación basada en {storage.totalImages} fotos · {storage.avgMBPerListing > 0 ? `${storage.avgMBPerListing.toFixed(1)} MB` : 'N/A'} promedio por publicación · 1.5 MB por foto asumido
+        </p>
       </div>
 
       {/* Tabs */}
