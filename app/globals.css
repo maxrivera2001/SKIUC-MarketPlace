@@ -51,6 +51,14 @@
 }
 
 @layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .line-clamp-1 {
     overflow: hidden;
     display: -webkit-box;
