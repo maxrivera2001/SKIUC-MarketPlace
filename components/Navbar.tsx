@@ -87,17 +87,16 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-
-            <Link
-              href="/"
-              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-navy-600 transition-colors"
-            >
-              Inicio
-            </Link>
           </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="hidden md:block px-3 py-2 rounded-md text-sm font-medium hover:bg-navy-600 transition-colors"
+            >
+              Inicio
+            </Link>
             <button
               onClick={handlePublicar}
               className="bg-white text-navy-700 hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-sm"

@@ -4,7 +4,10 @@ export type SpecField = {
   type: 'text' | 'number' | 'select' | 'boolean';
   options?: string[];
   unit?: string;
+  placeholder?: string;
+  optional?: boolean;
   filterable?: boolean;
+  conditional?: { field: string; value: boolean | string };
 };
 
 export type Category = {
@@ -26,25 +29,29 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['SL', 'GS', 'SG', 'DH', 'Park', 'Freeride', 'Powder', 'All Mountain'],
         filterable: true,
+        optional: true,
       },
-      { key: 'largo_cm', label: 'Largo (cm)', type: 'number', unit: 'cm', filterable: true },
-      { key: 'ancho_cintura_mm', label: 'Ancho cintura (mm)', type: 'number', unit: 'mm' },
-      { key: 'radio_curva_m', label: 'Radio de curva (m)', type: 'number', unit: 'm' },
+      { key: 'largo_cm', label: 'Largo', type: 'number', unit: 'cm', placeholder: '170', optional: true, filterable: true },
+      { key: 'ancho_cintura_mm', label: 'Ancho cintura', type: 'number', unit: 'mm', placeholder: '72', optional: true },
+      { key: 'radio_curva_m', label: 'Radio de curva', type: 'number', unit: 'm', placeholder: '17', optional: true },
       {
         key: 'genero',
         label: 'Género',
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'fijaciones_incluidas', label: 'Fijaciones incluidas', type: 'boolean' },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'fijaciones_incluidas', label: 'Fijaciones incluidas', type: 'boolean', optional: true },
+      { key: 'din_fijaciones', label: 'DIN de las fijaciones', type: 'number', placeholder: '3-10', optional: true, conditional: { field: 'fijaciones_incluidas', value: true } },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Rossignol', optional: true, filterable: true },
       {
         key: 'nivel',
         label: 'Nivel',
         type: 'select',
         options: ['Principiante', 'Intermedio', 'Avanzado', 'Experto'],
         filterable: true,
+        optional: true,
       },
     ],
   },
@@ -53,15 +60,16 @@ export const CATEGORIES: Category[] = [
     label: 'Botas de Ski',
     icon: '👢',
     specs: [
-      { key: 'talla_mondo', label: 'Talla Mondo', type: 'number', unit: 'mp', filterable: true },
-      { key: 'ancho_suela_mm', label: 'Ancho suela (mm)', type: 'number', unit: 'mm' },
-      { key: 'flex', label: 'Flex', type: 'number', filterable: true },
+      { key: 'talla_mondo', label: 'Talla Mondo', type: 'number', unit: 'mp', placeholder: '26,5', optional: true, filterable: true },
+      { key: 'largo_bota_mm', label: 'Largo de bota', type: 'number', unit: 'mm', placeholder: '308', optional: true },
+      { key: 'flex', label: 'Flex', type: 'number', placeholder: '90', optional: true, filterable: true },
       {
         key: 'tipo',
         label: 'Tipo',
         type: 'select',
         options: ['Alpino', 'Telemark', 'Tourer', 'Race'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'genero',
@@ -69,9 +77,10 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'walk_mode', label: 'Walk Mode', type: 'boolean' },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'walk_mode', label: 'Walk Mode', type: 'boolean', optional: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Lange', optional: true, filterable: true },
     ],
   },
   {
@@ -79,13 +88,14 @@ export const CATEGORIES: Category[] = [
     label: 'Bastones',
     icon: '🏒',
     specs: [
-      { key: 'largo_cm', label: 'Largo (cm)', type: 'number', unit: 'cm', filterable: true },
+      { key: 'largo_cm', label: 'Largo', type: 'number', unit: 'cm', placeholder: '100', optional: true, filterable: true },
       {
         key: 'tipo',
         label: 'Tipo',
         type: 'select',
-        options: ['recto', 'curvo'],
+        options: ['Recto', 'Curvo'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'material',
@@ -93,6 +103,7 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Aluminio', 'Carbono', 'Composite'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'genero',
@@ -100,8 +111,10 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'con_protecciones', label: 'Incluye protecciones de mano', type: 'boolean', optional: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Leki', optional: true, filterable: true },
     ],
   },
   {
@@ -113,8 +126,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL', 'Ajustable'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'Ajustable', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -122,10 +136,11 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Freeride', 'Race', 'All Mountain'],
         filterable: true,
+        optional: true,
       },
-      { key: 'certificacion_fis', label: 'Certificación FIS', type: 'boolean', filterable: true },
-      { key: 'visera_integrada', label: 'Visera integrada', type: 'boolean' },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'certificacion_fis', label: 'Certificación FIS', type: 'boolean', filterable: true, optional: true },
+      { key: 'bozal_slalom', label: '¿Incluye bozal de Slalom?', type: 'boolean', optional: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Uvex', optional: true, filterable: true },
     ],
   },
   {
@@ -133,17 +148,16 @@ export const CATEGORIES: Category[] = [
     label: 'Antiparras',
     icon: '🥽',
     specs: [
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Oakley', optional: true, filterable: true },
+      { key: 'es_junior', label: '¿Son talla Junior?', type: 'boolean', optional: true, filterable: true },
       {
-        key: 'talla_lente',
-        label: 'Talla lente',
+        key: 'tipo_vista',
+        label: 'Tipo de vista',
         type: 'select',
-        options: ['S', 'M', 'L', 'XL'],
+        options: ['Soleado', 'Nublado', 'Noche', 'Fotocromáticas', 'Espejo', 'Otro'],
         filterable: true,
+        optional: true,
       },
-      { key: 'vlt_percent', label: 'VLT (%)', type: 'number', unit: '%' },
-      { key: 'quick_change', label: 'Quick Change', type: 'boolean', filterable: true },
-      { key: 'otg', label: 'OTG (sobre gafas)', type: 'boolean', filterable: true },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
     ],
   },
   {
@@ -151,23 +165,24 @@ export const CATEGORIES: Category[] = [
     label: 'Fijaciones Ski',
     icon: '🔧',
     specs: [
-      { key: 'din_min', label: 'DIN mínimo', type: 'number', filterable: true },
-      { key: 'din_max', label: 'DIN máximo', type: 'number', filterable: true },
+      { key: 'din_min', label: 'DIN mínimo', type: 'number', placeholder: '3', optional: true, filterable: true },
+      { key: 'din_max', label: 'DIN máximo', type: 'number', placeholder: '12', optional: true, filterable: true },
       {
         key: 'tipo',
         label: 'Tipo',
         type: 'select',
         options: ['Alpine', 'Telemark', 'Tour', 'Race'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'compatibilidad_suela',
         label: 'Compatibilidad suela',
         type: 'select',
         options: ['Alpine', 'WTR', 'GripWalk', 'MNC'],
+        optional: true,
       },
-      { key: 'freno_mm', label: 'Freno (mm)', type: 'number', unit: 'mm' },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Marker', optional: true, filterable: true },
     ],
   },
   {
@@ -175,14 +190,15 @@ export const CATEGORIES: Category[] = [
     label: 'Tabla Snowboard',
     icon: '🏂',
     specs: [
-      { key: 'largo_cm', label: 'Largo (cm)', type: 'number', unit: 'cm', filterable: true },
-      { key: 'ancho_mm', label: 'Ancho (mm)', type: 'number', unit: 'mm' },
+      { key: 'largo_cm', label: 'Largo', type: 'number', unit: 'cm', placeholder: '155', optional: true, filterable: true },
+      { key: 'ancho_mm', label: 'Ancho', type: 'number', unit: 'mm', placeholder: '250', optional: true },
       {
         key: 'perfil',
         label: 'Perfil',
         type: 'select',
         options: ['Camber', 'Rocker', 'Flat', 'Hybrid'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -190,6 +206,7 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['All Mountain', 'Freestyle', 'Freeride', 'Race'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'genero',
@@ -197,8 +214,10 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'fijaciones_incluidas', label: 'Fijaciones incluidas', type: 'boolean', optional: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Burton', optional: true, filterable: true },
     ],
   },
   {
@@ -210,8 +229,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -219,6 +239,7 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Strap', 'Step-On', 'Flow'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'flex',
@@ -226,8 +247,9 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Suave', 'Medio', 'Rígido'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Burton', optional: true, filterable: true },
     ],
   },
   {
@@ -239,8 +261,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -248,16 +271,18 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Shell', 'Insulada', '3-en-1'],
         filterable: true,
+        optional: true,
       },
-      { key: 'impermeabilidad_mm', label: 'Impermeabilidad (mm)', type: 'number', unit: 'mm' },
+      { key: 'impermeabilidad_mm', label: 'Impermeabilidad', type: 'number', unit: 'mm', placeholder: '10000', optional: true },
       {
         key: 'genero',
         label: 'Género',
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: The North Face', optional: true, filterable: true },
     ],
   },
   {
@@ -269,8 +294,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -278,16 +304,18 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Shell', 'Insulado', 'Softshell'],
         filterable: true,
+        optional: true,
       },
-      { key: 'impermeabilidad_mm', label: 'Impermeabilidad (mm)', type: 'number', unit: 'mm' },
+      { key: 'impermeabilidad_mm', label: 'Impermeabilidad', type: 'number', unit: 'mm', placeholder: '10000', optional: true },
       {
         key: 'genero',
         label: 'Género',
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Spyder', optional: true, filterable: true },
     ],
   },
   {
@@ -299,8 +327,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'disciplina',
@@ -308,14 +337,16 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['SL', 'GS', 'SG', 'DH', 'Combinado'],
         filterable: true,
+        optional: true,
       },
-      { key: 'homologacion_fis', label: 'Homologación FIS', type: 'boolean', filterable: true },
+      { key: 'homologacion_fis', label: 'Homologación FIS', type: 'boolean', filterable: true, optional: true },
       {
         key: 'tipo',
         label: 'Tipo',
         type: 'select',
         options: ['Speed', 'Tech', 'All Events'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'genero',
@@ -323,8 +354,9 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Descente', optional: true, filterable: true },
     ],
   },
   {
@@ -336,8 +368,9 @@ export const CATEGORIES: Category[] = [
         key: 'talla',
         label: 'Talla',
         type: 'select',
-        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Otro'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'tipo',
@@ -345,6 +378,7 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Guante', 'Manopla', 'Trigger', 'Lobster'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'uso',
@@ -352,6 +386,7 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Freeride', 'Race', 'All Mountain', 'Freestyle'],
         filterable: true,
+        optional: true,
       },
       {
         key: 'genero',
@@ -359,8 +394,17 @@ export const CATEGORIES: Category[] = [
         type: 'select',
         options: ['Hombre', 'Mujer', 'Unisex', 'Junior'],
         filterable: true,
+        optional: true,
       },
-      { key: 'marca', label: 'Marca', type: 'text', filterable: true },
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Hestra', optional: true, filterable: true },
+    ],
+  },
+  {
+    id: 'otro',
+    label: 'Otro',
+    icon: '📦',
+    specs: [
+      { key: 'marca', label: 'Marca', type: 'text', placeholder: 'Ej: Nike', optional: true, filterable: true },
     ],
   },
 ];

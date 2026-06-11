@@ -17,6 +17,16 @@ const STEP_LABELS: Record<Step, string> = {
   review: 'Revisión',
 };
 
+function formatCLP(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return '';
+  return parseInt(digits, 10).toLocaleString('es-CL');
+}
+
+function parseCLP(formatted: string): string {
+  return formatted.replace(/\./g, '').replace(/,/g, '');
+}
+
 export default function PublishForm() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('category');
@@ -27,11 +37,12 @@ export default function PublishForm() {
   const [categoryId, setCategoryId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
+  const [priceDisplay, setPriceDisplay] = useState(''); // formatted for display
   const [condition, setCondition] = useState('');
   const [region, setRegion] = useState('');
   const [estacion, setEstacion] = useState('');
   const [specs, setSpecs] = useState<Record<string, string | boolean>>({});
+  const [customTalla, setCustomTalla] = useState<Record<string, string>>({});
   const [images, setImages] = useState<File[]>([]);
   const [phone, setPhone] = useState('');
   const [nombre, setNombre] = useState('');
@@ -49,12 +60,14 @@ export default function PublishForm() {
     if (prevIndex >= 0) setStep(STEPS[prevIndex]);
   };
 
+  const rawPrice = parseCLP(priceDisplay);
+
   const canGoNext = (): boolean => {
     switch (step) {
       case 'category':
         return !!categoryId;
       case 'details':
-        return !!(title.trim() && price && condition);
+        return !!(title.trim() && rawPrice && condition);
       case 'specs':
         return true;
       case 'images':
@@ -70,6 +83,26 @@ export default function PublishForm() {
 
   const handleSpecChange = (key: string, value: string | boolean) => {
     setSpecs((prev) => ({ ...prev, [key]: value }));
+    // Clear custom talla if switching away from Otro
+    if (value !== 'Otro') {
+      setCustomTalla((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  };
+
+  // Returns the final value for a spec key (resolves "Otro" to custom text)
+  const resolvedSpec = (key: string): string | boolean => {
+    const val = specs[key];
+    if (val === 'Otro' && customTalla[key]) return customTalla[key];
+    return val ?? '';
+  };
+
+  const isSpecVisible = (spec: { key: string; conditional?: { field: string; value: boolean | string } }): boolean => {
+    if (!spec.conditional) return true;
+    return specs[spec.conditional.field] === spec.conditional.value;
   };
 
   const handleSubmit = async () => {
@@ -82,9 +115,18 @@ export default function PublishForm() {
         const formData = new FormData();
         formData.append('file', file);
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('Error al subir imagen');
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error ?? 'Error al subir imagen');
+        }
         const data = await res.json();
         imageUrls.push(data.url);
+      }
+
+      // Build resolved specs
+      const resolvedSpecs: Record<string, string | boolean> = {};
+      for (const key of Object.keys(specs)) {
+        resolvedSpecs[key] = resolvedSpec(key);
       }
 
       // Create listing
@@ -94,10 +136,10 @@ export default function PublishForm() {
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim(),
-          price: parseInt(price, 10),
+          price: parseInt(rawPrice, 10),
           condition,
           category_id: categoryId,
-          specs,
+          specs: resolvedSpecs,
           images: imageUrls,
           region,
           estacion,
@@ -191,7 +233,7 @@ export default function PublishForm() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={`Ej: ${category?.label} ${category?.specs.find(s => s.key === 'marca')?.label ? '+ Marca' : ''}`}
+                placeholder={`Ej: ${category?.label ?? ''} ${category?.specs.find(s => s.key === 'marca') ? '+ Marca' : ''}`}
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400 focus:border-transparent"
                 maxLength={120}
               />
@@ -199,7 +241,9 @@ export default function PublishForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Descripción <span className="text-gray-400 font-normal text-xs">(opcional)</span>
+              </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -216,14 +260,17 @@ export default function PublishForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Precio (CLP) <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0"
-                  min={0}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400 focus:border-transparent"
-                />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={priceDisplay}
+                    onChange={(e) => setPriceDisplay(formatCLP(e.target.value))}
+                    placeholder="300.000"
+                    className="w-full border border-gray-300 rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400 focus:border-transparent"
+                  />
+                </div>
               </div>
 
               <div>
@@ -245,7 +292,9 @@ export default function PublishForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Región</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Región <span className="text-gray-400 font-normal text-xs">(opcional)</span>
+                </label>
                 <select
                   value={region}
                   onChange={(e) => setRegion(e.target.value)}
@@ -260,7 +309,7 @@ export default function PublishForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estación más cercana
+                  Estación más cercana <span className="text-gray-400 font-normal text-xs">(opcional)</span>
                 </label>
                 <select
                   value={estacion}
@@ -284,48 +333,66 @@ export default function PublishForm() {
               <h2 className="text-xl font-bold text-gray-900 mb-1">
                 Especificaciones de {category.label}
               </h2>
-              <p className="text-sm text-gray-500">Completa los datos técnicos (opcionales pero recomendados)</p>
+              <p className="text-sm text-gray-500">Todos los campos son opcionales pero ayudan a vender más rápido</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {category.specs.map((spec) => (
-                <div key={spec.key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {spec.label} {spec.unit && <span className="text-gray-400 font-normal">({spec.unit})</span>}
-                  </label>
+              {category.specs.map((spec) => {
+                if (!isSpecVisible(spec)) return null;
 
-                  {spec.type === 'select' && spec.options ? (
-                    <select
-                      value={(specs[spec.key] as string) ?? ''}
-                      onChange={(e) => handleSpecChange(spec.key, e.target.value)}
-                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400 bg-white"
-                    >
-                      <option value="">Seleccionar...</option>
-                      {spec.options.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : spec.type === 'boolean' ? (
-                    <label className="flex items-center gap-3 cursor-pointer mt-1">
-                      <input
-                        type="checkbox"
-                        checked={(specs[spec.key] as boolean) ?? false}
-                        onChange={(e) => handleSpecChange(spec.key, e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-navy-700 focus:ring-navy-500"
-                      />
-                      <span className="text-sm text-gray-600">Sí</span>
+                return (
+                  <div key={spec.key}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {spec.label}
+                      {spec.unit && <span className="text-gray-400 font-normal ml-1">({spec.unit})</span>}
+                      <span className="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
                     </label>
-                  ) : (
-                    <input
-                      type={spec.type === 'number' ? 'number' : 'text'}
-                      value={(specs[spec.key] as string) ?? ''}
-                      onChange={(e) => handleSpecChange(spec.key, e.target.value)}
-                      placeholder={spec.unit ? `Ej: 170` : ''}
-                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400"
-                    />
-                  )}
-                </div>
-              ))}
+
+                    {spec.type === 'select' && spec.options ? (
+                      <div>
+                        <select
+                          value={(specs[spec.key] as string) ?? ''}
+                          onChange={(e) => handleSpecChange(spec.key, e.target.value)}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400 bg-white"
+                        >
+                          <option value="">Seleccionar...</option>
+                          {spec.options.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                        {specs[spec.key] === 'Otro' && (
+                          <input
+                            type="text"
+                            value={customTalla[spec.key] ?? ''}
+                            onChange={(e) => setCustomTalla((prev) => ({ ...prev, [spec.key]: e.target.value }))}
+                            placeholder="Especifica la talla..."
+                            className="w-full mt-2 border border-navy-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400"
+                          />
+                        )}
+                      </div>
+                    ) : spec.type === 'boolean' ? (
+                      <label className="flex items-center gap-3 cursor-pointer mt-2">
+                        <input
+                          type="checkbox"
+                          checked={(specs[spec.key] as boolean) ?? false}
+                          onChange={(e) => handleSpecChange(spec.key, e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-navy-700 focus:ring-navy-500"
+                        />
+                        <span className="text-sm text-gray-600">Sí</span>
+                      </label>
+                    ) : (
+                      <input
+                        type={spec.type === 'number' ? 'text' : 'text'}
+                        inputMode={spec.type === 'number' ? 'decimal' : 'text'}
+                        value={(specs[spec.key] as string) ?? ''}
+                        onChange={(e) => handleSpecChange(spec.key, e.target.value)}
+                        placeholder={spec.placeholder ? `Ej: ${spec.placeholder}` : ''}
+                        className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy-400"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -409,7 +476,7 @@ export default function PublishForm() {
               <div className="flex justify-between">
                 <span className="text-gray-500">Precio</span>
                 <span className="font-bold text-navy-700">
-                  {parseInt(price || '0', 10).toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })}
+                  ${priceDisplay}
                 </span>
               </div>
               <div className="flex justify-between">

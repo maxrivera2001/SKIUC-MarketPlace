@@ -38,7 +38,7 @@ export default function RootLayout({
                   <span className="font-semibold text-white/90">Marketplace</span>
                 </div>
                 <p className="text-sm text-white/70">
-                  El marketplace chileno de equipo de ski y snowboard
+                  Por la Patria, Dios y la Universidad
                 </p>
               </div>
               <div className="text-sm text-white/60">
