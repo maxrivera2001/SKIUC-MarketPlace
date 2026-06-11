@@ -48,15 +48,23 @@ export default function Navbar() {
     <nav className="bg-navy-700 text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="bg-white rounded-md px-2 py-1">
-              <span className="text-navy-700 font-black text-lg tracking-tight">SKIUC</span>
-            </div>
-            <span className="hidden sm:block text-white font-semibold text-sm opacity-90">
-              Marketplace
-            </span>
-          </Link>
+          {/* Logo + Inicio */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-white rounded-md px-2 py-1">
+                <span className="text-navy-700 font-black text-lg tracking-tight">SKIUC</span>
+              </div>
+              <span className="hidden sm:block text-white font-semibold text-sm opacity-90">
+                Marketplace
+              </span>
+            </Link>
+            <Link
+              href="/"
+              className="hidden md:block bg-white text-[#C8102E] font-semibold px-4 py-2 rounded-lg text-sm transition-colors hover:bg-red-50 shadow-sm"
+            >
+              Inicio
+            </Link>
+          </div>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-2">
@@ -91,12 +99,6 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="hidden md:block px-3 py-2 rounded-md text-sm font-medium hover:bg-navy-600 transition-colors"
-            >
-              Inicio
-            </Link>
             <button
               onClick={handlePublicar}
               className="bg-white text-navy-700 hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-sm"

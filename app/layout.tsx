@@ -38,7 +38,7 @@ export default function RootLayout({
                   <span className="font-semibold text-white/90">Marketplace</span>
                 </div>
                 <p className="text-sm text-white/70">
-                  Por la Patria, Dios y la Universidad
+                  Por la Patria, Dios y la Universidad.
                 </p>
               </div>
               <div className="text-sm text-white/60">
