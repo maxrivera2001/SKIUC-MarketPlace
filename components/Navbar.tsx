@@ -60,7 +60,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/"
-              className="hidden md:block bg-white text-[#C8102E] font-semibold px-4 py-2 rounded-lg text-sm transition-colors hover:bg-red-50 shadow-sm"
+              className="bg-white text-[#C8102E] font-semibold px-4 py-2 rounded-lg text-sm transition-colors hover:bg-red-50 shadow-sm"
             >
               Inicio
             </Link>
