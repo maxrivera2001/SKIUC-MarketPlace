@@ -87,9 +87,13 @@ export async function POST(request: NextRequest) {
 
     case 'update_listing_status': {
       if (!body.listingId) return NextResponse.json({ error: 'listingId requerido' }, { status: 400 });
+      const newStatus = (body as { action: string; listingId?: string; status?: string }).status;
+      if (!newStatus || !['active', 'sold', 'paused'].includes(newStatus)) {
+        return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
+      }
       const { error } = await adminClient
         .from('listings')
-        .update({ status: body.userId }) // reusing field for status value
+        .update({ status: newStatus })
         .eq('id', body.listingId);
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true });

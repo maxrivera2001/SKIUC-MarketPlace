@@ -37,11 +37,20 @@ export default function AdminTable({ listings: initialListings, users: initialUs
   const [loading, setLoading] = useState<string | null>(null);
 
   const deleteListing = async (id: string) => {
-    if (!confirm('¿Eliminar esta publicación?')) return;
+    if (!confirm('¿Eliminar esta publicación? Esta acción no se puede deshacer.')) return;
     setLoading(id);
     try {
-      const res = await fetch(`/api/listings/${id}`, { method: 'DELETE' });
-      if (res.ok) setListings((prev) => prev.filter((l) => l.id !== id));
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_listing', listingId: id }),
+      });
+      if (res.ok) {
+        setListings((prev) => prev.filter((l) => l.id !== id));
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error}`);
+      }
     } finally {
       setLoading(null);
     }
@@ -50,10 +59,10 @@ export default function AdminTable({ listings: initialListings, users: initialUs
   const updateListingStatus = async (id: string, status: string) => {
     setLoading(id);
     try {
-      const res = await fetch(`/api/listings/${id}`, {
-        method: 'PATCH',
+      const res = await fetch('/api/admin', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ action: 'update_listing_status', listingId: id, status }),
       });
       if (res.ok) {
         setListings((prev) =>
@@ -61,6 +70,9 @@ export default function AdminTable({ listings: initialListings, users: initialUs
             l.id === id ? { ...l, status: status as 'active' | 'sold' | 'paused' } : l
           )
         );
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error}`);
       }
     } finally {
       setLoading(null);
