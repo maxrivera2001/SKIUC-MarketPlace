@@ -16,6 +16,8 @@ export type Profile = {
   region: string | null;
   blocked: boolean;
   created_at: string;
+  bio: string | null;
+  avatar_url: string | null;
 };
 
 export type Listing = {

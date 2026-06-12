@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
@@ -41,8 +42,18 @@ export default function RootLayout({
                   Por la Patria, Dios y la Universidad.
                 </p>
               </div>
-              <div className="text-sm text-white/60">
-                © {new Date().getFullYear()} SKIUC Marketplace. Todos los derechos reservados.
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
+                <div className="flex gap-4 text-sm">
+                  <Link href="/como-funciona" className="text-white/70 hover:text-white transition-colors">
+                    ¿Cómo funciona?
+                  </Link>
+                  <Link href="/terminos" className="text-white/70 hover:text-white transition-colors">
+                    Términos de uso
+                  </Link>
+                </div>
+                <div className="text-sm text-white/60">
+                  © {new Date().getFullYear()} SKIUC Marketplace. Todos los derechos reservados.
+                </div>
               </div>
             </div>
           </div>

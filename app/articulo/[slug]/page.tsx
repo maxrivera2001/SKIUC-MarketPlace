@@ -117,6 +117,7 @@ export default async function ArticuloPage({ params }: Props) {
               {listing.title}
             </h1>
             <p className="text-3xl sm:text-4xl font-black text-navy-700">{formatCLP(listing.price)}</p>
+            <span className="text-xs text-gray-400 font-mono">ID: #{listing.id.slice(0, 8)}</span>
           </div>
 
           {/* Location */}
@@ -177,6 +178,7 @@ export default async function ArticuloPage({ params }: Props) {
             <StatusActions
               listingId={listing.id}
               currentStatus={listing.status as 'active' | 'sold' | 'paused'}
+              listingShortId={listing.id.slice(0, 8)}
             />
           )}
         </div>

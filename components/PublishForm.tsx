@@ -27,7 +27,12 @@ function parseCLP(formatted: string): string {
   return formatted.replace(/\./g, '').replace(/,/g, '');
 }
 
-export default function PublishForm() {
+type PublishFormProps = {
+  defaultNombre?: string;
+  defaultTelefono?: string;
+};
+
+export default function PublishForm({ defaultNombre, defaultTelefono }: PublishFormProps) {
   const router = useRouter();
   const [step, setStep] = useState<Step>('category');
   const [submitting, setSubmitting] = useState(false);
@@ -44,8 +49,8 @@ export default function PublishForm() {
   const [specs, setSpecs] = useState<Record<string, string | boolean>>({});
   const [customTalla, setCustomTalla] = useState<Record<string, string>>({});
   const [images, setImages] = useState<File[]>([]);
-  const [phone, setPhone] = useState('');
-  const [nombre, setNombre] = useState('');
+  const [phone, setPhone] = useState(defaultTelefono ?? '');
+  const [nombre, setNombre] = useState(defaultNombre ?? '');
 
   const category = getCategoryById(categoryId);
   const currentStepIndex = STEPS.indexOf(step);

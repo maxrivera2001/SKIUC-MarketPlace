@@ -95,6 +95,12 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+            <Link
+              href="/como-funciona"
+              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-navy-600 transition-colors"
+            >
+              ¿Cómo funciona?
+            </Link>
           </div>
 
           {/* Right actions */}
@@ -127,6 +133,12 @@ export default function Navbar() {
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       Mi perfil
+                    </Link>
+                    <Link
+                      href="/mi-perfil"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      Editar perfil
                     </Link>
                     <Link
                       href="/publicar"

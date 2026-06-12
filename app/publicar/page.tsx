@@ -17,6 +17,12 @@ export default async function PublicarPage() {
     redirect('/');
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('nombre, telefono')
+    .eq('id', user.id)
+    .single();
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
@@ -25,7 +31,10 @@ export default async function PublicarPage() {
           Completa el formulario para publicar tu equipo de ski o snowboard
         </p>
       </div>
-      <PublishForm />
+      <PublishForm
+        defaultNombre={profile?.nombre ?? undefined}
+        defaultTelefono={profile?.telefono ?? undefined}
+      />
     </div>
   );
 }

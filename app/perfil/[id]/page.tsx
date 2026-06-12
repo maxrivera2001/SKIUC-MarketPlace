@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import ListingCard from '@/components/ListingCard';
 import { getCategoryLabel } from '@/lib/categories';
@@ -77,8 +79,19 @@ export default async function PerfilPage({ params }: Props) {
       <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8">
         <div className="flex items-start gap-6">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-2xl bg-navy-100 flex items-center justify-center text-navy-700 font-black text-3xl shrink-0">
-            {profile.nombre?.charAt(0).toUpperCase() ?? '?'}
+          <div className="w-20 h-20 rounded-2xl bg-navy-100 flex items-center justify-center text-navy-700 font-black text-3xl shrink-0 overflow-hidden border border-gray-200">
+            {profile.avatar_url ? (
+              <Image
+                src={profile.avatar_url}
+                alt={profile.nombre ?? 'Avatar'}
+                width={80}
+                height={80}
+                className="object-cover w-full h-full"
+                unoptimized
+              />
+            ) : (
+              profile.nombre?.charAt(0).toUpperCase() ?? '?'
+            )}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -94,6 +107,11 @@ export default async function PerfilPage({ params }: Props) {
                     </svg>
                     {profile.region}
                   </div>
+                )}
+                {profile.bio && (
+                  <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-sm">
+                    {profile.bio}
+                  </p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
                   Miembro desde {new Date(profile.created_at).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' })}
@@ -143,12 +161,18 @@ export default async function PerfilPage({ params }: Props) {
 
         {/* Owner actions */}
         {isOwner && (
-          <div className="mt-5 pt-5 border-t border-gray-100">
+          <div className="mt-5 pt-5 border-t border-gray-100 flex flex-wrap gap-3">
             <a
               href="/publicar"
               className="inline-flex items-center gap-2 bg-navy-700 hover:bg-navy-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
             >
               + Publicar nuevo artículo
+            </a>
+            <a
+              href="/mi-perfil"
+              className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-navy-700 font-semibold px-5 py-2.5 rounded-xl text-sm border border-navy-200 transition-colors"
+            >
+              Editar perfil
             </a>
           </div>
         )}
