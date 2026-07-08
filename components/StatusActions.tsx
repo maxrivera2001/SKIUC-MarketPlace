@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 type Status = 'active' | 'sold' | 'paused';
 
@@ -30,10 +31,12 @@ export default function StatusActions({
   listingId,
   currentStatus,
   listingShortId,
+  listingSlug,
 }: {
   listingId: string;
   currentStatus: Status;
   listingShortId?: string;
+  listingSlug?: string;
 }) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>(currentStatus);
@@ -102,6 +105,14 @@ export default function StatusActions({
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          {listingSlug && (
+            <Link
+              href={`/articulo/${listingSlug}/editar`}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-navy-100 hover:bg-navy-200 text-navy-700 flex items-center gap-1.5"
+            >
+              ✏️ Editar
+            </Link>
+          )}
           {TRANSITIONS[status].map((t) => (
             <button
               key={t.status}

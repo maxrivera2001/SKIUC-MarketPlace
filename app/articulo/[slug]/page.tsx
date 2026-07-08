@@ -179,6 +179,7 @@ export default async function ArticuloPage({ params }: Props) {
               listingId={listing.id}
               currentStatus={listing.status as 'active' | 'sold' | 'paused'}
               listingShortId={listing.id.slice(0, 8)}
+              listingSlug={listing.slug}
             />
           )}
         </div>

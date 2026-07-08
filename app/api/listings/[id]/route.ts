@@ -46,14 +46,23 @@ export async function PATCH(
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
 
-  let body: { status?: string };
+  let body: {
+    status?: string;
+    title?: string;
+    description?: string;
+    price?: number;
+    condition?: string;
+    specs?: Record<string, unknown>;
+    images?: string[];
+    region?: string;
+    estacion?: string;
+  };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'JSON inválido' }, { status: 400 });
   }
 
-  // Get listing to check ownership
   const { data: listing } = await supabase
     .from('listings')
     .select('seller_id, status')
@@ -69,12 +78,65 @@ export async function PATCH(
     return NextResponse.json({ error: 'Sin permisos' }, { status: 403 });
   }
 
-  if (body.status && !['active', 'sold', 'paused'].includes(body.status)) {
-    return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
+  const updates: Record<string, unknown> = {};
+
+  // Status update
+  if (body.status !== undefined) {
+    if (!['active', 'sold', 'paused'].includes(body.status)) {
+      return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
+    }
+    updates.status = body.status;
+    if (body.status === 'sold' && listing.status !== 'sold') {
+      updates.sold_at = new Date().toISOString();
+    } else if (body.status !== 'sold') {
+      updates.sold_at = null;
+    }
   }
 
-  const updates: Record<string, string> = {};
-  if (body.status) updates.status = body.status;
+  // Content updates (edit mode)
+  if (body.title !== undefined) {
+    if (!body.title.trim()) {
+      return NextResponse.json({ error: 'Título requerido' }, { status: 400 });
+    }
+    updates.title = body.title.trim();
+  }
+  if (body.description !== undefined) {
+    updates.description = body.description?.trim() ?? null;
+  }
+  if (body.price !== undefined) {
+    if (body.price <= 0) {
+      return NextResponse.json({ error: 'Precio inválido' }, { status: 400 });
+    }
+    updates.price = Math.round(body.price);
+  }
+  if (body.condition !== undefined) {
+    if (!['nuevo', 'como_nuevo', 'bueno', 'regular'].includes(body.condition)) {
+      return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
+    }
+    updates.condition = body.condition;
+  }
+  if (body.specs !== undefined) {
+    updates.specs = body.specs;
+  }
+  if (body.images !== undefined) {
+    if (body.images.length === 0) {
+      return NextResponse.json({ error: 'Al menos una imagen requerida' }, { status: 400 });
+    }
+    if (body.images.length > 5) {
+      return NextResponse.json({ error: 'Máximo 5 imágenes' }, { status: 400 });
+    }
+    updates.images = body.images;
+  }
+  if (body.region !== undefined) {
+    updates.region = body.region || null;
+  }
+  if (body.estacion !== undefined) {
+    updates.estacion = body.estacion || null;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'Nada que actualizar' }, { status: 400 });
+  }
 
   const { data, error } = await supabase
     .from('listings')
@@ -103,7 +165,6 @@ export async function DELETE(
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
 
-  // Get listing to check ownership
   const { data: listing } = await supabase
     .from('listings')
     .select('seller_id')
@@ -119,7 +180,6 @@ export async function DELETE(
     return NextResponse.json({ error: 'Sin permisos' }, { status: 403 });
   }
 
-  // Admin uses service key to bypass RLS
   const client = admin ? createAdminClient() : supabase;
   const { error } = await client.from('listings').delete().eq('id', params.id);
 

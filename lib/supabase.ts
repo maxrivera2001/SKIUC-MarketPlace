@@ -35,5 +35,6 @@ export type Listing = {
   region: string | null;
   estacion: string | null;
   slug: string;
+  sold_at: string | null;
   profiles?: Profile;
 };
