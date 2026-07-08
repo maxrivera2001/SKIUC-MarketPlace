@@ -56,12 +56,9 @@
 }
 
 .animate-sponsors-scroll {
-  animation: sponsors-scroll 20s linear infinite;
+  animation: sponsors-scroll 14s linear infinite;
   width: max-content;
-}
-
-.animate-sponsors-scroll:hover {
-  animation-play-state: paused;
+  will-change: transform;
 }
 
 @layer utilities {

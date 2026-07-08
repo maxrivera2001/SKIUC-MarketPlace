@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import FilterSidebar from '@/components/FilterSidebar';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import ListingsView from '@/components/ListingsView';
-import SponsorsCarousel from '@/components/SponsorsCarousel';
+import SponsorsStrip from '@/components/SponsorsStrip';
 import { CATEGORIES } from '@/lib/categories';
 import Link from 'next/link';
 import type { Listing } from '@/lib/supabase';
@@ -109,7 +109,11 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         </div>
       )}
 
-      {!hasSearch && currentPage === 1 && <SponsorsCarousel />}
+      {!hasSearch && currentPage === 1 && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+          <SponsorsStrip logoHeight={68} />
+        </div>
+      )}
 
       <div className="flex gap-6">
         {/* Desktop sidebar */}
