@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import FilterSidebar from '@/components/FilterSidebar';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import ListingsView from '@/components/ListingsView';
+import SponsorsCarousel from '@/components/SponsorsCarousel';
 import { CATEGORIES } from '@/lib/categories';
 import Link from 'next/link';
 import type { Listing } from '@/lib/supabase';
@@ -107,6 +108,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           ))}
         </div>
       )}
+
+      {!hasSearch && currentPage === 1 && <SponsorsCarousel />}
 
       <div className="flex gap-6">
         {/* Desktop sidebar */}

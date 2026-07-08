@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import SponsorsStrip from '@/components/SponsorsStrip';
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +29,8 @@ export default function RootLayout({
       <body className="min-h-screen bg-gray-50">
         <Navbar />
         <main>{children}</main>
-        <footer className="mt-16 bg-navy-700 text-white">
+        <SponsorsStrip />
+        <footer className="bg-navy-700 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               <div>

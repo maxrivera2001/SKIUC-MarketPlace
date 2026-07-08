@@ -50,6 +50,20 @@
   }
 }
 
+@keyframes sponsors-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.animate-sponsors-scroll {
+  animation: sponsors-scroll 20s linear infinite;
+  width: max-content;
+}
+
+.animate-sponsors-scroll:hover {
+  animation-play-state: paused;
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
