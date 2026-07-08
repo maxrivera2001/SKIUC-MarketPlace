@@ -56,7 +56,7 @@
 }
 
 .animate-sponsors-scroll {
-  animation: sponsors-scroll 14s linear infinite;
+  animation: sponsors-scroll 24s linear infinite;
   width: max-content;
   will-change: transform;
 }

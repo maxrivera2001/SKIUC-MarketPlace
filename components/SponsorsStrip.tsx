@@ -3,40 +3,40 @@
 import Image from 'next/image';
 
 const SPONSORS = [
-  { name: 'Avianca', src: '/sponsors/avianca.svg', aspect: 3.2 },
-  { name: 'CMPC', src: '/sponsors/cmpc.png', aspect: 1.9 },
-  { name: 'Xtreme Mining', src: '/sponsors/xtreme-mining.png', aspect: 3.6 },
+  { name: 'Xtreme Mining', src: '/sponsors/xtreme-mining.png' },
+  { name: 'CMPC',          src: '/sponsors/cmpc.png'          },
+  { name: 'Avianca',       src: '/sponsors/avianca.png'       },
+  { name: 'UC Christus',   src: '/sponsors/uc-christus.png'   },
 ];
 
 // Triplicados para loop infinito sin corte visible
 const TRACK = [...SPONSORS, ...SPONSORS, ...SPONSORS];
 
+// Todos son 1320×362 → ratio 3.64
+const ASPECT = 3.64;
+
 type Props = {
-  logoHeight?: number; // px
+  logoHeight?: number;
 };
 
 export default function SponsorsStrip({ logoHeight = 56 }: Props) {
+  const logoWidth = Math.round(logoHeight * ASPECT);
+
   return (
     <div className="bg-white border-t border-gray-100 overflow-hidden py-4">
-      <div className="relative">
-        <div className="flex items-center animate-sponsors-scroll" style={{ gap: '72px' }}>
-          {TRACK.map((s, i) => (
-            <div
-              key={i}
-              className="shrink-0 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity duration-300"
-              style={{ height: logoHeight }}
-            >
-              <Image
-                src={s.src}
-                alt={s.name}
-                width={Math.round(logoHeight * s.aspect)}
-                height={logoHeight}
-                className="object-contain"
-                style={{ height: logoHeight, width: 'auto', maxWidth: Math.round(logoHeight * s.aspect) }}
-              />
-            </div>
-          ))}
-        </div>
+      <div className="flex items-center animate-sponsors-scroll" style={{ gap: '80px' }}>
+        {TRACK.map((s, i) => (
+          <div key={i} className="shrink-0 flex items-center justify-center" style={{ height: logoHeight }}>
+            <Image
+              src={s.src}
+              alt={s.name}
+              width={logoWidth}
+              height={logoHeight}
+              className="object-contain"
+              style={{ height: logoHeight, width: 'auto' }}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
