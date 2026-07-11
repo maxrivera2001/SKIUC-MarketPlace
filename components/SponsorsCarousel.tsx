@@ -6,8 +6,10 @@ import Image from 'next/image';
 const SPONSORS = [
   { name: 'Avianca', src: '/sponsors/avianca.svg', width: 200, height: 60 },
   { name: 'CMPC', src: '/sponsors/cmpc.png', width: 160, height: 60 },
-  { name: 'Red de Salud UC Christus', src: '/sponsors/uc-christus.jpg', width: 240, height: 60 },
   { name: 'Xtreme Mining', src: '/sponsors/xtreme-mining.png', width: 220, height: 60 },
+  { name: 'El Colorado', src: '/sponsors/el-colorado.png', width: 220, height: 60 },
+  { name: 'Subaru', src: '/sponsors/subaru.png', width: 220, height: 60 },
+  { name: 'Atakama Roofing', src: '/sponsors/atakama-roofing.png', width: 220, height: 60 },
 ];
 
 export default function SponsorsCarousel() {

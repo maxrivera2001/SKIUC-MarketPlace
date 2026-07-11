@@ -3,10 +3,12 @@
 import Image from 'next/image';
 
 const SPONSORS = [
-  { name: 'Xtreme Mining', src: '/sponsors/xtreme-mining.png' },
-  { name: 'CMPC',          src: '/sponsors/cmpc.png'          },
-  { name: 'Avianca',       src: '/sponsors/avianca.png'       },
-  { name: 'UC Christus',   src: '/sponsors/uc-christus.png'   },
+  { name: 'Xtreme Mining',   src: '/sponsors/xtreme-mining.png'   },
+  { name: 'CMPC',            src: '/sponsors/cmpc.png'            },
+  { name: 'Avianca',         src: '/sponsors/avianca.png'         },
+  { name: 'El Colorado',     src: '/sponsors/el-colorado.png'     },
+  { name: 'Subaru',          src: '/sponsors/subaru.png'          },
+  { name: 'Atakama Roofing', src: '/sponsors/atakama-roofing.png' },
 ];
 
 // Triplicados para loop infinito sin corte visible
